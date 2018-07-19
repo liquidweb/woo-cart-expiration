@@ -41,7 +41,7 @@ function add_expiration_setting_args( $settings, $current_section ) {
 		array(
 			'title'    => __( 'Enable cart expiration', 'woo-cart-expiration' ),
 			'desc'     => __( 'Set a timer for each customer.', 'woocommerce' ),
-			'id'       => 'woocommerce_cart_expiration_enabled',
+			'id'       => Core\OPTIONS_PREFIX . 'enabled',
 			'default'  => 'no',
 			'desc_tip' => false,
 			'type'     => 'checkbox',
@@ -51,7 +51,7 @@ function add_expiration_setting_args( $settings, $current_section ) {
 		array(
 			'title'             => __( 'Expiration Time', 'woo-cart-expiration' ),
 			'desc'              => __( 'This sets the amount of time (in minutes) a customer has to check out.', 'woo-cart-expiration' ),
-			'id'                => 'woocommerce_cart_expiration_mins',
+			'id'                => Core\OPTIONS_PREFIX . 'mins',
 			'css'               => 'width:50px;',
 			'default'           => '15',
 			'desc_tip'          => true,
@@ -73,7 +73,7 @@ function add_expiration_setting_args( $settings, $current_section ) {
 	);
 
 	// Run our setup through a filter.
-	$setup  = apply_filters( Core\HOOK_PREFIX . 'expiration_setting_args', $setup, $settings, $current_section );
+	$setup  = apply_filters( Core\HOOK_PREFIX . 'setting_args', $setup, $settings, $current_section );
 
 	// Return the merged args (or the original if we wiped them out).
 	return ! empty( $setup ) ? wp_parse_args( $setup, $settings ) : $settings;

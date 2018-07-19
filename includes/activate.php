@@ -18,6 +18,10 @@ use LiquidWeb\WooCartExpiration as Core;
  */
 function activate() {
 
+	// Set our two settings.
+	add_option( Core\OPTIONS_PREFIX . 'enabled', 'no' );
+	add_option( Core\OPTIONS_PREFIX . 'mins', 15 );
+
 	// Include our action so that we may add to this later.
 	do_action( Core\HOOK_PREFIX . 'activate_process' );
 

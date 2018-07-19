@@ -10,11 +10,31 @@ namespace LiquidWeb\WooCartExpiration\CartActions;
 
 // Set our aliases.
 use LiquidWeb\WooCartExpiration as Core;
+use LiquidWeb\WooCartExpiration\Cookies as Cookies;
+use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 
 /**
  * Start our engines.
  */
+add_action( 'init', __NAMESPACE__ . '\check_cart_timer', 1 );
 add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\set_timer_on_cart', 10, 6 );
+
+/**
+ * Run our check against the existing timer.
+ *
+ * @return void
+ */
+function check_cart_timer() {
+
+	Cookies\check_expiration_cookie();
+
+
+
+	/*
+	global $woocommerce;
+	$woocommerce->cart->empty_cart();
+	*/
+}
 
 /**
  * Set our actual timer once we've added something to the cart.
@@ -30,5 +50,14 @@ add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\set_timer_on_cart', 10,
  */
 function set_timer_on_cart( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
 
+	// Check if we're enabled or not.
+	$enable = Utilities\maybe_expiration_enabled();
 
+	// Bail if we aren't enabled.
+	if ( ! $enable ) {
+		return;
+	}
+
+	// Go and set the cookie.
+	Cookies\set_expiration_cookie( $cart_item_key );
 }
