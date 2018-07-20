@@ -48,6 +48,7 @@ define( __NAMESPACE__ . '\COOKIE_NAME', 'woo_cart_expiration' );
 // Load our multi-use files.
 require_once __DIR__ . '/includes/cookies.php';
 require_once __DIR__ . '/includes/utilities.php';
+require_once __DIR__ . '/includes/display.php';
 
 // Load the triggered file loads.
 require_once __DIR__ . '/includes/activate.php';
@@ -61,6 +62,5 @@ if ( is_admin() ) {
 
 // Load our front-end actions.
 if ( ! is_admin() ) {
-	require_once __DIR__ . '/includes/display.php';
 	require_once __DIR__ . '/includes/cart-actions.php';
 }

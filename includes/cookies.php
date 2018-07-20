@@ -29,7 +29,8 @@ function set_expiration_cookie( $cart_item_key = '' ) {
 	$setup  = array( 'expire' => $expire, 'cart' => $cart_item_key );
 
 	// And set the cookie.
-	setcookie( Core\COOKIE_NAME, maybe_serialize( $setup ), $expire, '/' );
+	//setcookie( Core\COOKIE_NAME, maybe_serialize( $setup ), $expire, '/' );
+	setcookie( Core\COOKIE_NAME, base64_encode( maybe_serialize( $setup ) ), $expire, '/' );
 }
 
 /**
@@ -63,22 +64,19 @@ function check_expiration_cookie() {
 		return;
 	}
 
-	// Strip out the slashes so we can get a clean array.
-	$cookie = stripslashes( $_COOKIE[ Core\COOKIE_NAME ] );
-
-	// Now pull out my cookie data.
-	$cdata  = maybe_unserialize( $cookie );
+	// Decode and unserialize the cookie.
+	$cookie = maybe_unserialize( base64_decode( $_COOKIE[ Core\COOKIE_NAME ] ) );
 
 	// Bail without a set of data or an expire time.
-	if ( ! $cdata || empty( $cdata['expire'] ) ) {
+	if ( ! $cookie || empty( $cookie['expire'] ) ) {
 		return false;
 	}
 
 	echo '<p>Right Now: ' . date( 'm/d/Y g:i a', time() ) . '</p>';
-	echo '<p>Expire: ' . date( 'm/d/Y g:i a', absint( $cdata['expire'] ) ) . '</p>';
+	echo '<p>Expire: ' . date( 'm/d/Y g:i a', absint( $cookie['expire'] ) ) . '</p>';
 
 	// Return the amount of time or false for expired.
-	if ( absint( $cdata['expire'] ) >= time() ) {
+	if ( absint( $cookie['expire'] ) >= time() ) {
 		die( 'got time left' );
 	} else {
 		die( 'expir4d' );

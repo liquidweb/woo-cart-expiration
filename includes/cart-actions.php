@@ -19,6 +19,7 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 add_action( 'init', __NAMESPACE__ . '\check_cart_timer', 1 );
 add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\set_timer_on_cart', 10, 6 );
 
+
 /**
  * Run our check against the existing timer.
  *
@@ -26,9 +27,7 @@ add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\set_timer_on_cart', 10,
  */
 function check_cart_timer() {
 
-	Cookies\check_expiration_cookie();
-
-
+	// Cookies\check_expiration_cookie();
 
 	/*
 	global $woocommerce;
@@ -61,3 +60,6 @@ function set_timer_on_cart( $cart_item_key, $product_id, $quantity, $variation_i
 	// Go and set the cookie.
 	Cookies\set_expiration_cookie( $cart_item_key );
 }
+
+// Add filter to receive hook, and specify we need 2 parameters.
+
