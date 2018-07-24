@@ -16,9 +16,9 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 /**
  * Start our engines.
  */
-add_action( 'init', __NAMESPACE__ . '\check_cart_timer', 1 );
-add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\set_timer_on_cart', 10, 6 );
-
+//add_action( 'init', __NAMESPACE__ . '\check_cart_timer', 1 );
+add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\cart_added_action', 10, 6 );
+add_action( 'woocommerce_cart_item_removed', __NAMESPACE__ . '\cart_removed_action', 10, 2 );
 
 /**
  * Run our check against the existing timer.
@@ -27,12 +27,7 @@ add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\set_timer_on_cart', 10,
  */
 function check_cart_timer() {
 
-	// Cookies\check_expiration_cookie();
-
-	/*
-	global $woocommerce;
-	$woocommerce->cart->empty_cart();
-	*/
+	// Cookies\check_cookie();
 }
 
 /**
@@ -47,7 +42,7 @@ function check_cart_timer() {
  *
  * @return void
  */
-function set_timer_on_cart( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
+function cart_added_action( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
 
 	// Check if we're enabled or not.
 	$enable = Utilities\maybe_expiration_enabled();
@@ -58,8 +53,27 @@ function set_timer_on_cart( $cart_item_key, $product_id, $quantity, $variation_i
 	}
 
 	// Go and set the cookie.
-	Cookies\set_expiration_cookie( $cart_item_key );
+	Cookies\set_cookie( $cart_item_key );
 }
 
-// Add filter to receive hook, and specify we need 2 parameters.
+/**
+ * Set our actual timer once we've added something to the cart.
+ *
+ * @param string  $cart_item_key  The unique key of the cart action.
+ * @param object  $cart_object    The entire cart object, which is passed.
+ *
+ * @return void
+ */
+function cart_removed_action( $cart_item_key, $cart_object ) {
 
+	// Check the remaining items in the cart.
+	$cart_count = absint( WC()->cart->get_cart_contents_count() );
+
+	// If we still have stuff, continue as you were.
+	if ( ! empty( $cart_count ) ) {
+		return;
+	}
+
+	// Nothing left, so clear the cookies.
+	Cookies\clear_cookie();
+}

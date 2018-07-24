@@ -20,17 +20,16 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
  *
  * @return void
  */
-function set_expiration_cookie( $cart_item_key = '' ) {
+function set_cookie( $cart_item_key = '' ) {
 
 	// Get our amount of time to expire.
-	$expire = Utilities\get_expiration_time();
+	$stamps = Utilities\get_initial_expiration_times();
 
 	// Now create a JSON encoded array so we can check stuff later.
-	$setup  = array( 'expire' => $expire, 'cart' => $cart_item_key );
+	$setup  = array( 'expire' => absint( $stamps['expire'] ), 'cart' => $cart_item_key );
 
 	// And set the cookie.
-	//setcookie( Core\COOKIE_NAME, maybe_serialize( $setup ), $expire, '/' );
-	setcookie( Core\COOKIE_NAME, base64_encode( maybe_serialize( $setup ) ), $expire, '/' );
+	setcookie( Core\COOKIE_NAME, base64_encode( maybe_serialize( $setup ) ), absint( $stamps['cookie'] ), '/' );
 }
 
 /**
@@ -38,26 +37,31 @@ function set_expiration_cookie( $cart_item_key = '' ) {
  *
  * @return void
  */
-function delete_expiration_cookie() {
+function clear_cookie() {
 
 	// If we don't have the cookie, then no one cares.
 	if ( ! isset( $_COOKIE[ Core\COOKIE_NAME ] ) ) {
 		return;
 	}
 
+	// Set my reset time (in the past).
+	$reset  = current_time( 'timestamp', true ) - 3600;
+
 	// Unset the existing cookie.
 	unset( $_COOKIE[ Core\COOKIE_NAME ] );
 
 	// Now set a cookie in the past so it expires.
-	setcookie( Core\COOKIE_NAME, '', time() - 3600, '/' );
+	setcookie( Core\COOKIE_NAME, '', absint( $reset ), '/' );
 }
 
 /**
- * Delete the cookie if it's present.
+ * Check the status of the cookie if it's present.
  *
- * @return void
+ * @param  boolean $data  Whether to return the cookie data.
+ *
+ * @return mixed
  */
-function check_expiration_cookie() {
+function check_cookie( $data = false ) {
 
 	// If we don't have the cookie, then no one cares.
 	if ( ! isset( $_COOKIE[ Core\COOKIE_NAME ] ) ) {
@@ -72,16 +76,14 @@ function check_expiration_cookie() {
 		return false;
 	}
 
-	echo '<p>Right Now: ' . date( 'm/d/Y g:i a', time() ) . '</p>';
-	echo '<p>Expire: ' . date( 'm/d/Y g:i a', absint( $cookie['expire'] ) ) . '</p>';
-
-	// Return the amount of time or false for expired.
-	if ( absint( $cookie['expire'] ) >= time() ) {
-		die( 'got time left' );
-	} else {
-		die( 'expir4d' );
+	// If we requested the data, send it.
+	if ( $data ) {
+		return $cookie;
 	}
 
-	//echo time() - absint( $cdata['expire'] ); die();
-	//die();
+	// Set my current time.
+	$current_time   = current_time( 'timestamp', true );
+
+	// Return true / false for expired.
+	return absint( $cookie['expire'] ) >= absint( $current_time ) ? true : false;
 }

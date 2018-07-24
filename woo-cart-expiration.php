@@ -49,6 +49,7 @@ define( __NAMESPACE__ . '\COOKIE_NAME', 'woo_cart_expiration' );
 require_once __DIR__ . '/includes/cookies.php';
 require_once __DIR__ . '/includes/utilities.php';
 require_once __DIR__ . '/includes/display.php';
+require_once __DIR__ . '/includes/ajax-actions.php';
 
 // Load the triggered file loads.
 require_once __DIR__ . '/includes/activate.php';
