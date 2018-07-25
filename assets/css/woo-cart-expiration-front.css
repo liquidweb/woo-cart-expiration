@@ -1,0 +1,89 @@
+/*
+$background: #fff;
+$size: 100px;
+$thickness: 8px;
+$duration: 15s;
+$color: #6BC967;
+*/
+#woo-cart-timer-wrap {
+  position: fixed;
+  top: 5%;
+  right: 5%;
+  z-index: 9999; }
+
+.woo-cart-timer-radial {
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  position: relative; }
+  .woo-cart-timer-radial .woo-cart-timer-radial-half {
+    height: 100px;
+    width: 50px;
+    border-radius: 50px 0 0 50px;
+    background: #6BC967;
+    position: absolute; }
+    .woo-cart-timer-radial .woo-cart-timer-radial-half:nth-of-type(2) {
+      z-index: 500;
+      -webkit-transform-origin: center right;
+      -webkit-transform: rotate(180deg); }
+    .woo-cart-timer-radial .woo-cart-timer-radial-half:before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      height: 80px;
+      width: 40px;
+      border-radius: 45px 0 0 45px;
+      background: #fff; }
+    .woo-cart-timer-radial .woo-cart-timer-radial-half:after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      height: 200px;
+      width: 150px;
+      left: -100px;
+      top: -50px;
+      -webkit-transform-origin: center right; }
+  .woo-cart-timer-radial.woo-cart-radial-animate {
+    -webkit-transform-origin: center right; }
+    .woo-cart-timer-radial.woo-cart-radial-animate .woo-cart-timer-radial-half:nth-of-type(1):after {
+      -webkit-animation: rotateLeftMask 20s infinite linear; }
+    .woo-cart-timer-radial.woo-cart-radial-animate .woo-cart-timer-radial-half:nth-of-type(2):after {
+      -webkit-animation: rotateRightMask 20s infinite linear; }
+
+@-webkit-keyframes rotateLeftMask {
+  0% {
+    -webkit-transform: rotate(0deg); }
+  50% {
+    -webkit-transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(180deg); } }
+@-webkit-keyframes rotateRightMask {
+  0% {
+    -webkit-transform: rotate(0deg); }
+  50% {
+    -webkit-transform: rotate(180deg);
+    visibility: hidden; }
+  100% {
+    -webkit-transform: rotate(180deg);
+    visibility: hidden; } }
+#woo-cart-expire-countdown {
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+  position: absolute;
+  z-index: 501;
+  width: 100%;
+  height: auto;
+  top: 35%;
+  left: 0; }
+  #woo-cart-expire-countdown .expire-value {
+    font-size: 18px;
+    line-height: 18px; }
+    #woo-cart-expire-countdown .expire-value.expire-minutes:after {
+      content: ":";
+      font-size: 14px;
+      line-height: 18px;
+      padding: 0 1px; }
+
+/*# sourceMappingURL=woo-cart-expiration-front.css.map */

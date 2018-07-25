@@ -65,7 +65,7 @@ function get_current_cookie_expiration() {
 	$current_time   = current_time( 'timestamp', true );
 
 	// Return the remaining amount, or a zero.
-	return absint( $cookie['expire'] ) >= absint( $current_time ) ? absint( $cookie['expire'] ) - absint( $current_time ) : 0;
+	return absint( $cookie['expire'] ) >= absint( $current_time ) ? absint( $cookie['expire'] ) : 0;
 }
 
 /**
