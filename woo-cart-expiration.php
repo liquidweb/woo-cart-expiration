@@ -45,9 +45,13 @@ define( __NAMESPACE__ . '\OPTIONS_PREFIX', 'woo_cart_expiration_opt_' );
 // Set the prefix for our cookie.
 define( __NAMESPACE__ . '\COOKIE_NAME', 'woo_cart_expiration' );
 
+// Set the name for our settings anchor.
+define( __NAMESPACE__ . '\SETTINGS_ANCHOR', 'woo-cart-expiration-settings' );
+
 // Load our multi-use files.
 require_once __DIR__ . '/includes/cookies.php';
 require_once __DIR__ . '/includes/utilities.php';
+require_once __DIR__ . '/includes/markup.php';
 require_once __DIR__ . '/includes/display.php';
 require_once __DIR__ . '/includes/ajax-actions.php';
 

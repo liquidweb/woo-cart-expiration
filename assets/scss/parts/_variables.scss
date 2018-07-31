@@ -1,0 +1,24 @@
+/*
+ * Load up our variables.
+ */
+
+// Items for the timer.
+$timer_bg: #fff;
+$timer_size: 100px;
+$timer_thick: 10px;
+$timer_duration: 20s;
+$pulse_duration: 2s;
+
+// Set our timer colors.
+$timer_color_standard: #3232ff;
+$timer_color_closer: #6bc967;
+$timer_color_warning: #ffae19;
+$timer_color_soon: #ff3232;
+$timer_color_soon_rgb: 255,50,50;
+
+// Items for the modal.
+$modal_close_size: 20px;
+
+// Set the colors in the modal.
+$modal_color_close: #b20000;
+$modal_color_close_bg: #fff;

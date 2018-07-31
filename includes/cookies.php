@@ -12,6 +12,22 @@ namespace LiquidWeb\WooCartExpiration\Cookies;
 use LiquidWeb\WooCartExpiration as Core;
 use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 
+/**
+ * Set up the args when we store a cookie.
+ *
+ * @param  integer $timer_expire  When the timer should expire.
+ * @param  string  $cart_key      The cart key (which may be null).
+ *
+ * @return string                 The base64 encoded array.
+ */
+function build_cookie_args( $timer_expire = 0, $cart_key = '' ) {
+
+	// Now create a JSON encoded array so we can check stuff later.
+	$setup  = array( 'expire' => absint( $timer_expire ), 'cart' => $cart_key );
+
+	// Return the base64 string.
+	return base64_encode( maybe_serialize( $setup ) );
+}
 
 /**
  * Set the cookie to begin the countdown.
@@ -26,10 +42,10 @@ function set_cookie( $cart_item_key = '' ) {
 	$stamps = Utilities\get_initial_expiration_times();
 
 	// Now create a JSON encoded array so we can check stuff later.
-	$setup  = array( 'expire' => absint( $stamps['expire'] ), 'cart' => $cart_item_key );
+	$setup  = build_cookie_args( $stamps['expire'], $cart_item_key );
 
 	// And set the cookie.
-	setcookie( Core\COOKIE_NAME, base64_encode( maybe_serialize( $setup ) ), absint( $stamps['cookie'] ), '/' );
+	setcookie( Core\COOKIE_NAME, $setup, absint( $stamps['cookie'] ), '/' );
 }
 
 /**
@@ -39,19 +55,39 @@ function set_cookie( $cart_item_key = '' ) {
  */
 function clear_cookie() {
 
-	// If we don't have the cookie, then no one cares.
-	if ( ! isset( $_COOKIE[ Core\COOKIE_NAME ] ) ) {
-		return;
+	// Unset the existing cookie if we have it.
+	if ( isset( $_COOKIE[ Core\COOKIE_NAME ] ) ) {
+		unset( $_COOKIE[ Core\COOKIE_NAME ] );
 	}
 
 	// Set my reset time (in the past).
-	$reset  = current_time( 'timestamp', true ) - 3600;
+	$reset  = current_time( 'timestamp', true ) - 86400;
 
-	// Unset the existing cookie.
-	unset( $_COOKIE[ Core\COOKIE_NAME ] );
+	// Now create a JSON encoded array so we can check stuff later.
+	$setup  = build_cookie_args( 0, '' );
 
 	// Now set a cookie in the past so it expires.
-	setcookie( Core\COOKIE_NAME, '', absint( $reset ), '/' );
+	setcookie( Core\COOKIE_NAME, $setup, absint( $reset ), '/' );
+}
+
+/**
+ * Reset an existing cookie.
+ *
+ * @param  string $cart_item_key  The key from the cart.
+ *
+ * @return void
+ */
+function reset_cookie( $cart_item_key = '' ) {
+
+	// Assuming we have it, remove it.
+	if ( isset( $_COOKIE[ Core\COOKIE_NAME ] ) ) {
+
+		// Unset the existing cookie.
+		unset( $_COOKIE[ Core\COOKIE_NAME ] );
+	}
+
+	// Now set my cookie.
+	set_cookie( $cart_item_key );
 }
 
 /**

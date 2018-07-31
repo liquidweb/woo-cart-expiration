@@ -10,11 +10,24 @@ namespace LiquidWeb\WooCartExpiration\SettingsTab;
 
 // Set our aliases.
 use LiquidWeb\WooCartExpiration as Core;
+use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 
 /**
  * Start our engines.
  */
+
+add_action( 'woocommerce_settings_tabs_advanced', __NAMESPACE__ . '\add_setting_link_anchor' );
 add_action( 'woocommerce_get_settings_advanced', __NAMESPACE__ . '\add_expiration_setting_args', 10, 2 );
+add_filter( 'plugin_action_links', __NAMESPACE__ . '\add_plugin_settings_link', 10, 2 );
+
+/**
+ * Set a small div so we can anchor to it.
+ *
+ * @return HTML
+ */
+function add_setting_link_anchor() {
+	echo '<div style="height:0;" id="' . sanitize_html_class( Core\SETTINGS_ANCHOR ) . '">&nbsp;</div>';
+}
 
 /**
  * Add our new settings to the existing advanced tab in WooCommerce.
@@ -77,4 +90,45 @@ function add_expiration_setting_args( $settings, $current_section ) {
 
 	// Return the merged args (or the original if we wiped them out).
 	return ! empty( $setup ) ? wp_parse_args( $setup, $settings ) : $settings;
+}
+
+/**
+ * Add our "settings" links to the plugins page.
+ *
+ * @param  array  $links  The existing array of links.
+ * @param  string $file   The file we are actually loading from.
+ *
+ * @return array  $links  The updated array of links.
+ */
+function add_plugin_settings_link( $links, $file ) {
+
+	// Bail without caps.
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return $links;
+	}
+
+	// Set the static var.
+	static $this_plugin;
+
+	// Check the base if we aren't paired up.
+	if ( ! $this_plugin ) {
+		$this_plugin = Core\BASE;
+	}
+
+	// Check to make sure we are on the correct plugin.
+	if ( $file != $this_plugin ) {
+		return $links;
+	}
+
+	// Fetch our settings link.
+	$link   = Utilities\get_settings_tab_link();
+
+	// Now create the link markup.
+	$setup  = '<a href="' . esc_url( $link ) . ' ">' . esc_html__( 'Settings', 'woo-cart-expiration' ) . '</a>';
+
+	// Add it to the array.
+	array_unshift( $links, $setup );
+
+	// Return the resulting array.
+	return $links;
 }

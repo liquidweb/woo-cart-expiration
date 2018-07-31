@@ -1,41 +1,37 @@
 
-// CONFIG
-/*
-$background: #fff;
-$size: 100px;
-$thickness: 8px;
-$duration: 15s;
-$color: #6BC967;
-*/
-
-#woo-cart-timer-wrap {
+// The full wrap on the timer.
+.woo-cart-timer-wrap {
 	position: fixed;
 	top: 5%;
 	right: 5%;
 	z-index: 9999;
+
+	&.woo-cart-timer-wrap-hidden {
+		display: none;
+		visibility: hidden;
+	}
 }
 
 
 .woo-cart-timer-radial {
 
-	// CONFIG
-	$background: #fff;
-	$size: 100px;
-	$thickness: 10px; // set to half of the size for a center
-	$duration: 20s;
-	$color: #6BC967;
-
 	overflow: hidden;
-	height: $size;
-	width: $size;
+	height: $timer_size;
+	width: $timer_size;
 	position: relative;
+	background-color: transparent;
+	border-radius: 50%;
+	border-color: #fff;
+	-webkit-box-shadow: 0 0 2px 2px rgba(0,0,0,0.1);
+	box-shadow: 0 0 2px 2px rgba(0,0,0,0.1);
 
 	.woo-cart-timer-radial-half {
-		height: $size;
-		width: $size / 2;
-		border-radius: $size / 2 0 0 $size / 2;
-		background: $color;
+		height: $timer_size;
+		width: $timer_size / 2;
+		border-radius: $timer_size / 2 0 0 $timer_size / 2;
+		background: $timer_color_standard;
 		position: absolute;
+		border-color: #fff;
 
 		&:nth-of-type(2) {
 			z-index: 500;
@@ -46,48 +42,60 @@ $color: #6BC967;
 		&:before {
 			content: "";
 			position: absolute;
-			top: $thickness;
-			left: $thickness;
-			height: $size - 2 * $thickness;
-			width: ( $size - 2 * $thickness ) / 2;
-			border-radius: ( $size - $thickness ) / 2 0 0 ( $size - $thickness ) / 2;
-			background: $background;
+			top: $timer_thick;
+			left: $timer_thick;
+			height: $timer_size - 2 * $timer_thick;
+			width: ( $timer_size - 2 * $timer_thick ) / 2;
+			border-radius: ( $timer_size - $timer_thick ) / 2 0 0 ( $timer_size - $timer_thick ) / 2;
+			background: $timer_bg;
 		}
 
 		&:after {
 			content: "";
 			position: absolute;
-			background: $background;
-			height: $size * 2;
-			width: $size * 1.5;
-			left: -$size;
-			top: -$size / 2;
+			background: $timer_bg;
+			height: $timer_size * 2;
+			width: $timer_size * 1.5;
+			left: -$timer_size;
+			top: -$timer_size / 2;
 			-webkit-transform-origin: center right;
 		}
+	}
+
+	&.woo-cart-timer-radial-expire-closer {
+
+		.woo-cart-timer-radial-half {
+			background: $timer_color_closer;
+		}
+	}
+
+	&.woo-cart-timer-radial-expire-warning {
+
+		.woo-cart-timer-radial-half {
+			background: $timer_color_warning;
+		}
+	}
+
+	&.woo-cart-timer-radial-expire-soon {
+
+		.woo-cart-timer-radial-half {
+			background: $timer_color_soon;
+		}
+	}
+
+	&.woo-cart-timer-radial-expire-pulse {
+		animation: pulseTimer 2s infinite;
 	}
 
 	&.woo-cart-radial-animate {
 		-webkit-transform-origin: center right;
 		.woo-cart-timer-radial-half:nth-of-type(1):after {
-			-webkit-animation: rotateLeftMask $duration infinite linear;
+			-webkit-animation: rotateLeftMask $timer_duration infinite linear;
 		}
 		.woo-cart-timer-radial-half:nth-of-type(2):after {
-			-webkit-animation: rotateRightMask $duration infinite linear;
+			-webkit-animation: rotateRightMask $timer_duration infinite linear;
 		}
 	}
-}
-
-// Animations
-
-@-webkit-keyframes rotateLeftMask {
-	0%   { -webkit-transform: rotate(0deg); }
-	50%   { -webkit-transform: rotate(0deg); }
-	100% { -webkit-transform: rotate(180deg); }
-}
-@-webkit-keyframes rotateRightMask {
-	0%   { -webkit-transform: rotate(0deg); }
-	50%   { -webkit-transform: rotate(180deg); visibility: hidden; }
-	100% { -webkit-transform: rotate(180deg); visibility: hidden; }
 }
 
 #woo-cart-expire-countdown {
@@ -105,6 +113,7 @@ $color: #6BC967;
 
 		font-size: 18px;
 		line-height: 18px;
+		color: #000;
 
 		&.expire-minutes {
 

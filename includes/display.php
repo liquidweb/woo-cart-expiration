@@ -10,13 +10,14 @@ namespace LiquidWeb\WooCartExpiration\Display;
 
 // Set our aliases.
 use LiquidWeb\WooCartExpiration as Core;
+use LiquidWeb\WooCartExpiration\Markup as Markup;
 use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 
 /**
  * Start our engines.
  */
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\load_expiration_assets' );
-add_action( 'wp_head', __NAMESPACE__ . '\load_expiration_metatag' );
+add_action( 'wp_head', __NAMESPACE__ . '\load_expiration_metatag', 999 );
 
 /**
  * Load our front-end side JS and CSS.
@@ -44,13 +45,19 @@ function load_expiration_assets() {
 
 	// Set my localized variables.
 	$local  = array(
-		'ajaxurl'  => admin_url( 'admin-ajax.php' ),
-		'nonce'    => wp_create_nonce( 'woo_cart_timer_action' ),
-		'interval' => apply_filters( Core\HOOK_PREFIX . 'timer_interval', 10000 ), // Time in seconds.
+		'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+		'maybe_check'  => Utilities\maybe_checkout_page(),
+		'timer_nonce'  => wp_create_nonce( 'woo_cart_timer_action' ),
+		'markup_nonce' => wp_create_nonce( 'woo_markup_timer_action' ),
+		'count_nonce'  => wp_create_nonce( 'woo_cart_count_action' ),
+		'reset_nonce'  => wp_create_nonce( 'woo_cart_reset_action' ),
+		'set_expired'  => Utilities\get_initial_expiration_times( 'expire' ),
+		'cookie_name'  => Core\COOKIE_NAME,
+		'interval'     => apply_filters( Core\HOOK_PREFIX . 'timer_interval', 10000 ), // Time in microseconds.
 	);
 
 	// Load our CSS file.
-	wp_enqueue_style( $handle, Core\ASSETS_URL . '/css/' . $file . '.css', false, $vers, 'all' );
+	wp_enqueue_style( $handle, Core\ASSETS_URL . '/css/' . $file . '.css', array( 'dashicons' ), $vers, 'all' );
 
 	// And our JS.
 	wp_enqueue_script( $handle, Core\ASSETS_URL . '/js/' . $file . '.js', array( 'jquery' ), $vers, true );
@@ -78,51 +85,25 @@ function load_expiration_metatag() {
 	// Load up our meta tag.
 	echo '<meta name="woo-cart-expiration" content="' . absint( $expire ) . '" />';
 
-	// And include our timer markuo
-	add_action( 'wp_footer', __NAMESPACE__ . '\load_timer_markup', 999 );
+	// And include our timer and modal markup.
+	add_action( 'wp_footer', __NAMESPACE__ . '\load_timer_display', 999 );
+	add_action( 'wp_footer', __NAMESPACE__ . '\load_modal_display', 999 );
 }
 
 /**
- * Output the placeholder timer.
+ * Output the timer markup display if loaded.
  *
  * @return HTML
  */
-function load_timer_markup() {
-	echo timer_markup_display();
+function load_timer_display() {
+	Markup\timer_markup_display( true );
 }
 
 /**
- * Build and retun the actual timer markup.
+ * Output the timer markup display if loaded.
  *
  * @return HTML
  */
-function timer_markup_display() {
-
-	// Set an empty.
-	$timer  = '';
-
-	// Wrap the whole thing in a div.
-	$timer .= '<div id="woo-cart-timer-wrap">';
-
-		// Add a second div.
-		$timer .= '<div class="woo-cart-timer-radial woo-cart-radial-animate">';
-
-			// And a third div.
-			$timer .= '<div class="woo-cart-timer-radial-half"></div>';
-			$timer .= '<div class="woo-cart-timer-radial-half"></div>';
-
-			// Include the two values inside of a paragraph.
-			$timer .= '<p id="woo-cart-expire-countdown">';
-				$timer .= '<span class="expire-value expire-minutes">0</span>';
-				$timer .= '<span class="expire-value expire-seconds">00</span>';
-			$timer .= '</p>';
-
-		// Close up our inner div.
-		$timer .= '</div>';
-
-	// Close up our div.
-	$timer .= '</div>';
-
-	// Run our setup through a filter.
-	return apply_filters( Core\HOOK_PREFIX . 'timer_markup', trim( $timer ) );
+function load_modal_display() {
+	Markup\expire_modal_display( true );
 }

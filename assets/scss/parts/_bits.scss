@@ -1,0 +1,25 @@
+/*
+ * Load up our mixins.
+ */
+
+
+@mixin backcolor( $r, $g, $b, $opacity: 1 ) {
+	background-color: rgb( $r, $g, $b );
+	background-color: rgba($r, $g, $b, $opacity );
+}
+
+@mixin border( $size: 2px, $type: solid, $color: #333 ) {
+	border: $size $type $color;
+}
+
+@mixin border-radius( $x: 4px ) {
+	-webkit-border-radius: $x;
+	-moz-border-radius: $x;
+	border-radius: $x;
+}
+
+@mixin box-shadow( $hz, $vt, $blur, $spread, $color ) {
+	-moz-box-shadow: $hz $vt $blur $spread $color;
+	-webkit-box-shadow: $hz $vt $blur $spread $color;
+	box-shadow: $hz $vt $blur $spread $color;
+}

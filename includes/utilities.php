@@ -29,9 +29,11 @@ function maybe_expiration_enabled() {
 /**
  * Calculate the expiration time for a new cookie.
  *
- * @return array  The cart expire and actual cookie (which is more).
+ * @param  string $key  Request a single key from the array.
+ *
+ * @return array        The cart expire and actual cookie (which is more).
  */
-function get_initial_expiration_times() {
+function get_initial_expiration_times( $key = false ) {
 
 	// Fetch the amount of time.
 	$stored = get_option( Core\OPTIONS_PREFIX . 'mins', 15 );
@@ -42,14 +44,22 @@ function get_initial_expiration_times() {
 	// Set an actual expire, which is 7 additional minutes.
 	$cookie = absint( $expire ) + 420;
 
+	// Set up the array.
+	$setup  = array( 'expire' => $expire, 'cookie' => $cookie );
+
 	// Return the array.
-	return array( 'expire' => $expire, 'cookie' => $cookie );
+	if ( ! $key ) {
+		return $setup;
+	}
+
+	// Return the single, or false.
+	return isset( $setup[ $key ] ) ? $setup[ $key ] : false;
 }
 
 /**
- * Calc the amount of time left on a cookie.
+ * Get the expiration on a current cookie.
  *
- * @return array  The cart expire and actual cookie (which is more).
+ * @return integer  The expiration time in Unix or zero.
  */
 function get_current_cookie_expiration() {
 
@@ -66,6 +76,58 @@ function get_current_cookie_expiration() {
 
 	// Return the remaining amount, or a zero.
 	return absint( $cookie['expire'] ) >= absint( $current_time ) ? absint( $cookie['expire'] ) : 0;
+}
+
+/**
+ * Get the remaining time on a current cookie.
+ *
+ * @param  string $return  How to return the data.
+ *
+ * @return mixed           The remaining time in seconds, or as a formatted string.
+ */
+function get_current_cookie_remaining( $return = '' ) {
+
+	// First get the cookie data.
+	$cookie = Cookies\check_cookie( true );
+
+	// Bail without the data.
+	if ( ! $cookie || empty( $cookie['expire'] ) ) {
+		return 0;
+	}
+
+	// Set my current time.
+	$current_time   = current_time( 'timestamp', true );
+
+	// If we are expired, just return zero.
+	if ( absint( $current_time ) >= absint( $cookie['expire'] ) ) {
+		return 0;
+	}
+
+	// Set my remaining time.
+	$remaining_time = absint( $cookie['expire'] ) - absint( $current_time );
+
+	// Set my two pieces of data.
+	$remain_minutes = floor( ( $remaining_time / 60 ) % 60 );
+	$remain_seconds = $remaining_time % 60;
+
+	// Handle my different return formats.
+	switch ( sanitize_text_field( $return ) ) {
+
+		case 'format' :
+			return absint( $remain_minutes ) . ':' . absint( $remain_seconds );
+			break;
+
+		case 'array' :
+			return array( 'minutes' => absint( $remain_minutes ), 'seconds' => absint( $remain_seconds ) );
+			break;
+
+		default :
+			return absint( $remaining_time );
+
+		// End all case breaks.
+	}
+
+	// And we're done.
 }
 
 /**
@@ -86,6 +148,45 @@ function clear_current_cart() {
 
 	// And clear out the cookie.
 	Cookies\clear_cookie();
+}
+
+/**
+ * Check if we are on the checkout page
+ * which could also be orders.
+ *
+ * @return string
+ */
+function maybe_checkout_page() {
+
+	// First see if it's checkout.
+	if ( ! is_checkout() ) {
+		return 'no';
+	}
+
+	// Check for an order variable.
+	$order  = get_query_var( 'order-received', false );
+
+	// If we have an order variable, it isn't actually checkout.
+	if ( $order ) {
+		return 'order';
+	}
+
+	// @@todo other checks needed?
+	return 'checkout';
+}
+
+/**
+ * Return our base link, with function fallbacks.
+ *
+ * @return string
+ */
+function get_settings_tab_link() {
+
+	// First set the main link.
+	$settings   = ! function_exists( 'menu_page_url' ) ? admin_url( 'admin.php?page=wc-settings&tab=advanced' ) : add_query_arg( array( 'tab' => 'advanced' ), menu_page_url( 'wc-settings', false ) );
+
+	// Now return the link with the hash.
+	return $settings . '#' . sanitize_html_class( Core\SETTINGS_ANCHOR );
 }
 
 /**

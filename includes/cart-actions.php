@@ -16,19 +16,9 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 /**
  * Start our engines.
  */
-//add_action( 'init', __NAMESPACE__ . '\check_cart_timer', 1 );
 add_action( 'woocommerce_add_to_cart', __NAMESPACE__ . '\cart_added_action', 10, 6 );
 add_action( 'woocommerce_cart_item_removed', __NAMESPACE__ . '\cart_removed_action', 10, 2 );
-
-/**
- * Run our check against the existing timer.
- *
- * @return void
- */
-function check_cart_timer() {
-
-	// Cookies\check_cookie();
-}
+add_action( 'woocommerce_checkout_order_processed', __NAMESPACE__ . '\order_received_action', 10, 3 );
 
 /**
  * Set our actual timer once we've added something to the cart.
@@ -75,5 +65,21 @@ function cart_removed_action( $cart_item_key, $cart_object ) {
 	}
 
 	// Nothing left, so clear the cookies.
+	Cookies\clear_cookie();
+}
+
+/**
+ * Set our actual timer once we've added something to the cart.
+ *
+ * @param  integer $order_id     The order ID generated.
+ * @param  array   $posted_data  The post data from the order.
+ * @param  object  $order        The newly created order.
+ *
+ * @return void
+ */
+function order_received_action( $order_id, $posted_data, $order ) {
+
+	// We don't care what the gateway
+	// was, or even if it succeeded.
 	Cookies\clear_cookie();
 }

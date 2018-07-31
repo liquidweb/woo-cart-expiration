@@ -1,3 +1,8 @@
+// The parts we use for all the things.
+@import "parts/variables";
+@import "parts/bits";
+@import "parts/keyframes";
+
 // All the front-end parts will be pulled in.
 @import "front/timer";
-
+@import "front/modal";
