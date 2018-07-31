@@ -94,7 +94,7 @@ function check_cart_count() {
 
 	// If we have nothing left, clear the cookie.
 	if ( ! $cart_count ) {
-		Cookies\clear_cookie();
+		Utilities\clear_current_cart();
 	}
 
 	// Send a response with the boolean of items in the cart remaining.
