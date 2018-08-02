@@ -15,7 +15,7 @@ function triggerCartPolling( cartPollID ) {
 
 		// No error, so just keep going.
 		if ( response.success === true || response.success === 'true' ) {
-			console.log( 'still good' );
+
 			// @@todo determine how to handle an OK.
 
 			// And be done.
@@ -24,13 +24,9 @@ function triggerCartPolling( cartPollID ) {
 
 		// Handle the failure.
 		if ( response.success === false || response.success === 'false' ) {
-			console.log( 'expired' );
+
 			// Clear out the cart intervals and remove the timer itself.
 			destroyAllEvidence();
-
-			// Refresh the Woo cart fragments.
-			jQuery( document.body ).trigger( 'wc_fragment_refresh' );
-			jQuery( document.body ).trigger( 'updated_wc_div' );
 
 			// And be done.
 			return;
@@ -107,13 +103,50 @@ function maybeRemoveTimer() {
 
 		// If we have zero, kill it.
 		if ( response.data.empty === true ) {
+
+			// Destroy the timer and whatnot.
 			destroyAllEvidence();
+
+			// And be done.
+			return;
 		}
 
 	// Finish up the Ajax call, enforcing the JSON setup.
 	}, 'json' );
 
 	// And that's it.
+}
+
+/**
+ * Remove any cart contents we may have.
+ */
+function killTheCartContents() {
+
+	// Build the data structure for the call.
+	var data = {
+		action: 'woo_cart_clear_expired_cart',
+		nonce: wooCartExpiration.killit_nonce,
+	};
+
+	// Send out the ajax call itself.
+	jQuery.post( wooCartExpiration.ajaxurl, data, function( response ) {
+
+		// Handle the failure.
+		if ( response.success === false || response.success === 'false' ) {
+			return;
+		}
+
+		// If we cleared, make sure the fragments are flushed.
+		if ( response.data.cleared === true ) {
+			jQuery( document.body ).trigger( 'wc_fragment_refresh' );
+			jQuery( document.body ).trigger( 'updated_wc_div' );
+		}
+
+	// Finish up the Ajax call, enforcing the JSON setup.
+	}, 'json' );
+
+	// And that's it.
+	return;
 }
 
 /**
@@ -172,15 +205,25 @@ function displayTimerValues( expireDate, timerBlock ) {
 
 	// Compare the two dates.
 	if ( parseInt( expireDate, 10 ) <= parseInt( currentDate, 10 ) ) {
+
+		// Destroy the evidence.
 		destroyAllEvidence();
+
+		// And be done.
+		return;
 	}
 
 	// Calculate my total seconds.
 	var totalSeconds = expireDate - currentDate;
 
 	// If we haz none, kill it dead with fire.
-	if ( parseInt( totalSeconds, 10 ) < 0 ) {
+	if ( parseInt( totalSeconds, 10 ) < 1 ) {
+
+		// Destroy the evidence.
 		destroyAllEvidence();
+
+		// And be done.
+		return;
 	}
 
 	// Now set my initial seconds as a variable.
@@ -214,20 +257,22 @@ function setTimerDisplayClass( totalSeconds ) {
 	var radialBlock = jQuery( '#woo-cart-timer-wrap-id' ).find( '.woo-cart-timer-radial' );
 
 	// Set some benchmarks.
-	var bmarks = [
-		10, 60, 180, 300
+	var classPoints = [
+		10, 30, 60, 180, 300
 	];
 
 	// Now start doing some math.
-	if ( parseInt( totalSeconds, 10 ) < parseInt( bmarks[0], 10 ) ) {
+	if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[0], 10 ) ) {
+
+		// And show the expire modal.
+		jQuery( '.woo-cart-expire-modal-wrap' ).addClass( 'woo-cart-expire-modal-wrap-display' );
+
+	} else if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[1], 10 ) ) {
 
 		// Add our pulsing class.
 		radialBlock.addClass( 'woo-cart-timer-radial-expire-pulse' );
 
-		// And show the expire modal.
-		displayExpireAlert();
-
-	} else if ( parseInt( totalSeconds, 10 ) < parseInt( bmarks[1], 10 ) ) {
+	} else if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[2], 10 ) ) {
 
 		// Remove any older ones.
 		radialBlock.removeClass( 'woo-cart-timer-radial-expire-closer' );
@@ -236,7 +281,7 @@ function setTimerDisplayClass( totalSeconds ) {
 		// And add the important one.
 		radialBlock.addClass( 'woo-cart-timer-radial-expire-soon' );
 
-	} else if ( parseInt( totalSeconds, 10 ) < parseInt( bmarks[2], 10 ) ) {
+	} else if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[3], 10 ) ) {
 
 		// Remove any older ones.
 		radialBlock.removeClass( 'woo-cart-timer-radial-expire-closer' );
@@ -244,7 +289,7 @@ function setTimerDisplayClass( totalSeconds ) {
 		// And add the important one.
 		radialBlock.addClass( 'woo-cart-timer-radial-expire-warning' );
 
-	} else if ( parseInt( totalSeconds, 10 ) < parseInt( bmarks[3], 10 ) ) {
+	} else if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[4], 10 ) ) {
 
 		// Check the getting closer.
 		radialBlock.addClass( 'woo-cart-timer-radial-expire-closer' );
@@ -254,21 +299,42 @@ function setTimerDisplayClass( totalSeconds ) {
 }
 
 /**
- * Load the modal display on almost expire.
+ * Clear out the any and all parts of the process.
  */
-function displayExpireAlert() {
+function destroyAllEvidence() {
 
-	// Find the modal box and load it up.
-	jQuery( '.woo-cart-expire-modal-wrap' ).addClass( 'woo-cart-expire-modal-wrap-display' );
+	// Stomp any intervals runnning.
+	killAllIntervals();
+
+	// Make sure the cart is cleared out first.
+	killTheCartContents();
+
+	// Delete the cookie to be safe.
+	document.cookie = wooCartExpiration.cookie_name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
+	// Set a variable for the (possible) cart.
+	var timerDisplay = document.getElementById( 'woo-cart-timer-wrap-id' );
+
+	// And remove the whole counter thing.
+	if ( timerDisplay ) {
+		timerDisplay.remove();
+	}
+
+	// Set a variable for the (possible) modal.
+	var modalDisplay = document.getElementById( 'woo-cart-expire-modal-wrap-id' );
+
+	// And remove the whole modal thing.
+	if ( modalDisplay ) {
+		modalDisplay.remove();
+	}
+
+	// And be done.
 }
 
 /**
  * Clear out the intervals we may have set.
  */
-function destroyAllEvidence() {
-
-	// Delete the cookie to be safe.
-	document.cookie = wooCartExpiration.cookie_name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+function killAllIntervals() {
 
 	// Check for the cart polling.
 	if ( window.cartPollID !== undefined && window.cartPollID !== 'undefined' ) {
@@ -279,16 +345,6 @@ function destroyAllEvidence() {
 	if ( window.cartTimeID !== undefined && window.cartTimeID !== 'undefined' ) {
 		window.clearInterval( window.cartTimeID );
 	}
-
-	// Set a variable for the (possible) cart.
-	var timerDisplay = document.getElementById( 'woo-cart-timer-wrap-id' );
-
-	// And remove the whole counter thing.
-	if ( timerDisplay ) {
-		timerDisplay.remove();
-	}
-
-	// And be done.
 }
 
 /**
@@ -350,7 +406,7 @@ jQuery( document ).ready( function($) {
 
 	// If no meta tag exists, make sure no intervals are running.
 	} else {
-		destroyAllEvidence();
+		killAllIntervals();
 	}
 
 	// Check if we're on the checkout page.
@@ -381,14 +437,10 @@ jQuery( document ).ready( function($) {
 	$( '.woo-cart-expire-modal-wrap' ).on( 'click', '.woo-cart-expire-modal-close', function( event ) {
 
 		// Now fade out the message, then remove it.
-		$( '.woo-cart-expire-modal-block' ).fadeOut( 'slow', function() {
+		$( '.woo-cart-expire-modal-block' ).fadeOut( 'slow' );
 
-			// Perhaps kill the timer.
-			maybeRemoveTimer();
-
-			// And remove the modal itself.
-			$( '.woo-cart-expire-modal-wrap' ).remove();
-		});
+		// Perhaps kill the timer.
+		maybeRemoveTimer();
 	});
 
 //********************************************************

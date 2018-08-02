@@ -51,6 +51,7 @@ function load_expiration_assets() {
 		'markup_nonce' => wp_create_nonce( 'woo_markup_timer_action' ),
 		'count_nonce'  => wp_create_nonce( 'woo_cart_count_action' ),
 		'reset_nonce'  => wp_create_nonce( 'woo_cart_reset_action' ),
+		'killit_nonce' => wp_create_nonce( 'woo_cart_killit_action' ),
 		'set_expired'  => Utilities\get_initial_expiration_times( 'expire' ),
 		'cookie_name'  => Core\COOKIE_NAME,
 		'interval'     => apply_filters( Core\HOOK_PREFIX . 'timer_interval', 10000 ), // Time in microseconds.

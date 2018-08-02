@@ -183,7 +183,7 @@ function maybe_checkout_page() {
 function get_settings_tab_link() {
 
 	// First set the main link.
-	$settings   = ! function_exists( 'menu_page_url' ) ? admin_url( 'admin.php?page=wc-settings&tab=advanced' ) : add_query_arg( array( 'tab' => 'advanced' ), menu_page_url( 'wc-settings', false ) );
+	$settings   = ! function_exists( 'menu_page_url' ) ? admin_url( 'admin.php?page=wc-settings&tab=general' ) : add_query_arg( array( 'tab' => 'general' ), menu_page_url( 'wc-settings', false ) );
 
 	// Now return the link with the hash.
 	return $settings . '#' . sanitize_html_class( Core\SETTINGS_ANCHOR );

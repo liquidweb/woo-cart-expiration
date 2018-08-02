@@ -15,9 +15,8 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 /**
  * Start our engines.
  */
-
-add_action( 'woocommerce_settings_tabs_advanced', __NAMESPACE__ . '\add_setting_link_anchor' );
-add_action( 'woocommerce_get_settings_advanced', __NAMESPACE__ . '\add_expiration_setting_args', 10, 2 );
+add_action( 'woocommerce_settings_tabs_general', __NAMESPACE__ . '\add_setting_link_anchor' );
+add_action( 'woocommerce_get_settings_general', __NAMESPACE__ . '\add_expiration_setting_args', 10 );
 add_filter( 'plugin_action_links', __NAMESPACE__ . '\add_plugin_settings_link', 10, 2 );
 
 /**
@@ -30,14 +29,13 @@ function add_setting_link_anchor() {
 }
 
 /**
- * Add our new settings to the existing advanced tab in WooCommerce.
+ * Add our new settings to the existing general tab in WooCommerce.
  *
  * @param  array  $settings         The current array of settings.
- * @param  string $current_section  The section we are on (if broken down).
  *
  * @return HTML
  */
-function add_expiration_setting_args( $settings, $current_section ) {
+function add_expiration_setting_args( $settings ) {
 
 	// Set up our array of settings data.
 	$setup  = array(
@@ -86,7 +84,7 @@ function add_expiration_setting_args( $settings, $current_section ) {
 	);
 
 	// Run our setup through a filter.
-	$setup  = apply_filters( Core\HOOK_PREFIX . 'setting_args', $setup, $settings, $current_section );
+	$setup  = apply_filters( Core\HOOK_PREFIX . 'setting_args', $setup, $settings );
 
 	// Return the merged args (or the original if we wiped them out).
 	return ! empty( $setup ) ? wp_parse_args( $setup, $settings ) : $settings;

@@ -17,21 +17,23 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 /**
  * Start our engines.
  */
-add_action( 'wp_ajax_woo_cart_reset_cookie_checkout', __NAMESPACE__ . '\reset_cart_cookie' );
-add_action( 'wp_ajax_nopriv_woo_cart_reset_cookie_checkout', __NAMESPACE__ . '\reset_cart_cookie' );
-add_action( 'wp_ajax_woo_cart_check_remaining_count', __NAMESPACE__ . '\check_cart_count' );
-add_action( 'wp_ajax_nopriv_woo_cart_check_remaining_count', __NAMESPACE__ . '\check_cart_count' );
-add_action( 'wp_ajax_woo_cart_get_timer_markup', __NAMESPACE__ . '\timer_markup' );
-add_action( 'wp_ajax_nopriv_woo_cart_get_timer_markup', __NAMESPACE__ . '\timer_markup' );
-add_action( 'wp_ajax_woo_cart_expiration_timer', __NAMESPACE__ . '\cart_timer' );
-add_action( 'wp_ajax_nopriv_woo_cart_expiration_timer', __NAMESPACE__ . '\cart_timer' );
+add_action( 'wp_ajax_woo_cart_reset_cookie_checkout', __NAMESPACE__ . '\reset_cookie_checkout' );
+add_action( 'wp_ajax_nopriv_woo_cart_reset_cookie_checkout', __NAMESPACE__ . '\reset_cookie_checkout' );
+add_action( 'wp_ajax_woo_cart_check_remaining_count', __NAMESPACE__ . '\check_remaining_count' );
+add_action( 'wp_ajax_nopriv_woo_cart_check_remaining_count', __NAMESPACE__ . '\check_remaining_count' );
+add_action( 'wp_ajax_woo_cart_get_timer_markup', __NAMESPACE__ . '\get_timer_markup' );
+add_action( 'wp_ajax_nopriv_woo_cart_get_timer_markup', __NAMESPACE__ . '\get_timer_markup' );
+add_action( 'wp_ajax_woo_cart_expiration_timer', __NAMESPACE__ . '\expiration_timer' );
+add_action( 'wp_ajax_nopriv_woo_cart_expiration_timer', __NAMESPACE__ . '\expiration_timer' );
+add_action( 'wp_ajax_woo_cart_clear_expired_cart', __NAMESPACE__ . '\clear_expired_cart' );
+add_action( 'wp_ajax_nopriv_woo_cart_clear_expired_cart', __NAMESPACE__ . '\clear_expired_cart' );
 
 /**
  * Reset our cart cookie.
  *
  * @return mixed
  */
-function reset_cart_cookie() {
+function reset_cookie_checkout() {
 
 	// Check our various constants.
 	if ( ! Utilities\check_ajax_constants() ) {
@@ -71,7 +73,7 @@ function reset_cart_cookie() {
  *
  * @return mixed
  */
-function check_cart_count() {
+function check_remaining_count() {
 
 	// Check our various constants.
 	if ( ! Utilities\check_ajax_constants() ) {
@@ -106,7 +108,7 @@ function check_cart_count() {
  *
  * @return mixed
  */
-function timer_markup() {
+function get_timer_markup() {
 
 	// Check our various constants.
 	if ( ! Utilities\check_ajax_constants() ) {
@@ -135,7 +137,7 @@ function timer_markup() {
  *
  * @return mixed
  */
-function cart_timer() {
+function expiration_timer() {
 
 	// Check our various constants.
 	if ( ! Utilities\check_ajax_constants() ) {
@@ -167,6 +169,35 @@ function cart_timer() {
 
 	// Send a response with the time remaining.
 	send_ajax_success_response( array( 'remain' => absint( $remain ) ) );
+}
+
+/**
+ * Clear out the cart as needed.
+ *
+ * @return mixed
+ */
+function clear_expired_cart() {
+
+	// Check our various constants.
+	if ( ! Utilities\check_ajax_constants() ) {
+		return;
+	}
+
+	// Check for the specific action.
+	if ( empty( $_POST['action'] ) || 'woo_cart_clear_expired_cart' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+		return;
+	}
+
+	// Check to see if our nonce was provided.
+	if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_killit_action' ) ) {
+		send_ajax_error_response( 'invalid-nonce' );
+	}
+
+	// This one doesn't really think. So call with care.
+	Utilities\clear_current_cart();
+
+	// Send a response with the time remaining.
+	send_ajax_success_response( array( 'cleared' => true ) );
 }
 
 /**
