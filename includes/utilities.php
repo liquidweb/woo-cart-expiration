@@ -192,9 +192,11 @@ function get_settings_tab_link() {
 /**
  * Check our various constants on an Ajax call.
  *
+ * @param  string  $action  Which action we are checking for.
+ *
  * @return boolean
  */
-function check_ajax_constants() {
+function check_ajax_constants( $action = '' ) {
 
 	// Check for a REST API request.
 	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
@@ -208,6 +210,14 @@ function check_ajax_constants() {
 
 	// Check for running a cron, unless we've skipped that.
 	if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+		return false;
+	}
+
+	// Set the action.
+	$action = ! empty( $action ) ? sanitize_text_field( $action ) : false;
+
+	// Check for the specific action.
+	if ( ! $action || ! isset( $_POST['action'] ) || sanitize_text_field( $action ) !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
 		return false;
 	}
 

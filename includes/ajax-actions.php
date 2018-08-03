@@ -36,12 +36,7 @@ add_action( 'wp_ajax_nopriv_woo_cart_clear_expired_cart', __NAMESPACE__ . '\clea
 function reset_cookie_checkout() {
 
 	// Check our various constants.
-	if ( ! Utilities\check_ajax_constants() ) {
-		return;
-	}
-
-	// Check for the specific action.
-	if ( ! isset( $_POST['action'] ) || 'woo_cart_reset_cookie_checkout' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! Utilities\check_ajax_constants( 'woo_cart_reset_cookie_checkout' ) ) {
 		return;
 	}
 
@@ -76,12 +71,7 @@ function reset_cookie_checkout() {
 function check_remaining_count() {
 
 	// Check our various constants.
-	if ( ! Utilities\check_ajax_constants() ) {
-		return;
-	}
-
-	// Check for the specific action.
-	if ( ! isset( $_POST['action'] ) || 'woo_cart_check_remaining_count' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! Utilities\check_ajax_constants( 'woo_cart_check_remaining_count' ) ) {
 		return;
 	}
 
@@ -111,12 +101,7 @@ function check_remaining_count() {
 function get_timer_markup() {
 
 	// Check our various constants.
-	if ( ! Utilities\check_ajax_constants() ) {
-		return;
-	}
-
-	// Check for the specific action.
-	if ( ! isset( $_POST['action'] ) || 'woo_cart_get_timer_markup' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! Utilities\check_ajax_constants( 'woo_cart_get_timer_markup' ) ) {
 		return;
 	}
 
@@ -140,12 +125,7 @@ function get_timer_markup() {
 function expiration_timer() {
 
 	// Check our various constants.
-	if ( ! Utilities\check_ajax_constants() ) {
-		return;
-	}
-
-	// Check for the specific action.
-	if ( ! isset( $_POST['action'] ) || 'woo_cart_expiration_timer' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! Utilities\check_ajax_constants( 'woo_cart_expiration_timer' ) ) {
 		return;
 	}
 
@@ -179,12 +159,7 @@ function expiration_timer() {
 function clear_expired_cart() {
 
 	// Check our various constants.
-	if ( ! Utilities\check_ajax_constants() ) {
-		return;
-	}
-
-	// Check for the specific action.
-	if ( ! isset( $_POST['action'] ) || 'woo_cart_clear_expired_cart' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! Utilities\check_ajax_constants( 'woo_cart_clear_expired_cart' ) ) {
 		return;
 	}
 
