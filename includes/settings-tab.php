@@ -22,7 +22,7 @@ add_filter( 'plugin_action_links', __NAMESPACE__ . '\add_plugin_settings_link', 
 /**
  * Set a small div so we can anchor to it.
  *
- * @return HTML
+ * @return void
  */
 function add_setting_link_anchor() {
 	echo '<div style="height:0;" id="' . sanitize_html_class( Core\SETTINGS_ANCHOR ) . '">&nbsp;</div>';
@@ -114,7 +114,7 @@ function add_plugin_settings_link( $links, $file ) {
 	}
 
 	// Check to make sure we are on the correct plugin.
-	if ( $file != $this_plugin ) {
+	if ( $file !== $this_plugin ) {
 		return $links;
 	}
 

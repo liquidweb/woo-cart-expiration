@@ -94,7 +94,7 @@ function load_expiration_metatag() {
 /**
  * Output the timer markup display if loaded.
  *
- * @return HTML
+ * @return void
  */
 function load_timer_display() {
 	Markup\timer_markup_display( true );
@@ -103,7 +103,7 @@ function load_timer_display() {
 /**
  * Output the timer markup display if loaded.
  *
- * @return HTML
+ * @return void
  */
 function load_modal_display() {
 	Markup\expire_modal_display( true );

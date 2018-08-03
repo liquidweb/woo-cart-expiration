@@ -18,7 +18,7 @@
 namespace LiquidWeb\WooCartExpiration;
 
 
-// Exit if accessed directly
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Define our plugin version.

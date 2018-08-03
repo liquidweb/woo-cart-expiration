@@ -41,12 +41,12 @@ function reset_cookie_checkout() {
 	}
 
 	// Check for the specific action.
-	if ( empty( $_POST['action'] ) || 'woo_cart_reset_cookie_checkout' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! isset( $_POST['action'] ) || 'woo_cart_reset_cookie_checkout' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
 	// Check to see if our nonce was provided.
-	if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_reset_action' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_reset_action' ) ) { // WPCS: CSRF ok.
 		send_ajax_error_response( 'invalid-nonce' );
 	}
 
@@ -81,12 +81,12 @@ function check_remaining_count() {
 	}
 
 	// Check for the specific action.
-	if ( empty( $_POST['action'] ) || 'woo_cart_check_remaining_count' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! isset( $_POST['action'] ) || 'woo_cart_check_remaining_count' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
 	// Check to see if our nonce was provided.
-	if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_count_action' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_count_action' ) ) { // WPCS: CSRF ok.
 		send_ajax_error_response( 'invalid-nonce' );
 	}
 
@@ -116,12 +116,12 @@ function get_timer_markup() {
 	}
 
 	// Check for the specific action.
-	if ( empty( $_POST['action'] ) || 'woo_cart_get_timer_markup' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! isset( $_POST['action'] ) || 'woo_cart_get_timer_markup' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
 	// Check to see if our nonce was provided.
-	if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_markup_timer_action' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_markup_timer_action' ) ) { // WPCS: CSRF ok.
 		send_ajax_error_response( 'invalid-nonce' );
 	}
 
@@ -145,12 +145,12 @@ function expiration_timer() {
 	}
 
 	// Check for the specific action.
-	if ( empty( $_POST['action'] ) || 'woo_cart_expiration_timer' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! isset( $_POST['action'] ) || 'woo_cart_expiration_timer' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
 	// Check to see if our nonce was provided.
-	if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_timer_action' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_timer_action' ) ) { // WPCS: CSRF ok.
 		send_ajax_error_response( 'invalid-nonce' );
 	}
 
@@ -184,12 +184,12 @@ function clear_expired_cart() {
 	}
 
 	// Check for the specific action.
-	if ( empty( $_POST['action'] ) || 'woo_cart_clear_expired_cart' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
+	if ( ! isset( $_POST['action'] ) || 'woo_cart_clear_expired_cart' !== sanitize_text_field( $_POST['action'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
 	// Check to see if our nonce was provided.
-	if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_killit_action' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'woo_cart_killit_action' ) ) { // WPCS: CSRF ok.
 		send_ajax_error_response( 'invalid-nonce' );
 	}
 
@@ -204,15 +204,17 @@ function clear_expired_cart() {
  * Build and process our Ajax error handler.
  *
  * @param  string $errcode  The error code in question.
+ * @param  array  $args     Any args to include in the response.
  *
- * @return array
+ * @return json
  */
-function send_ajax_error_response( $errcode = '' ) {
+function send_ajax_error_response( $errcode = '', $args = array() ) {
 
 	// Build our return.
-	$return = array(
-		'errcode' => $errcode,
-	);
+	$setup  = array( 'errcode' => sanitize_text_field( $errcode ) );
+
+	// Add the args if we got them.
+	$return = ! empty( $args ) ? wp_parse_args( $args, $setup ) : $setup;
 
 	// And handle my JSON return.
 	wp_send_json_error( $return );
@@ -223,7 +225,7 @@ function send_ajax_error_response( $errcode = '' ) {
  *
  * @param  array $args  Any args to include in the response.
  *
- * @return array
+ * @return json
  */
 function send_ajax_success_response( $args = array() ) {
 
