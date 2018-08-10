@@ -128,6 +128,32 @@
     background: #ffae19; }
   .woo-cart-timer-radial.woo-cart-timer-radial-expire-soon .woo-cart-timer-radial-half {
     background: #ff3232; }
+  .woo-cart-timer-radial.woo-cart-timer-radial-expire-full {
+    border-color: #ff3232; }
+    .woo-cart-timer-radial.woo-cart-timer-radial-expire-full .woo-cart-timer-radial-half {
+      background-color: #ff3232;
+      background-color: rgba(255, 50, 50, 0.1); }
+      .woo-cart-timer-radial.woo-cart-timer-radial-expire-full .woo-cart-timer-radial-half:nth-of-type(2) {
+        z-index: 500; }
+      .woo-cart-timer-radial.woo-cart-timer-radial-expire-full .woo-cart-timer-radial-half:before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        height: 80px;
+        width: 40px;
+        border-radius: 45px 0 0 45px;
+        background-color: #ff3232;
+        background-color: rgba(255, 50, 50, 0.3); }
+      .woo-cart-timer-radial.woo-cart-timer-radial-expire-full .woo-cart-timer-radial-half:after {
+        content: "";
+        position: absolute;
+        height: 200px;
+        width: 150px;
+        left: -100px;
+        top: -50px;
+        background-color: #ff3232;
+        background-color: rgba(255, 50, 50, 0.3); }
   .woo-cart-timer-radial.woo-cart-timer-radial-expire-pulse {
     animation: pulseTimer 2s infinite; }
   .woo-cart-timer-radial.woo-cart-radial-animate {
@@ -156,6 +182,10 @@
       font-size: 14px;
       line-height: 18px;
       padding: 0 1px; }
+
+.woo-cart-timer-radial-expire-full #woo-cart-expire-countdown .expire-value {
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); }
 
 .woo-cart-expire-modal-wrap {
   display: none;

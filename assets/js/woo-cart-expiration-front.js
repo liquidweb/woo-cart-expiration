@@ -60,11 +60,14 @@ function displayTimerMarkup( cartIntervl ) {
 		// Load markup if we have it.
 		if ( response.data.markup !== '' ) {
 
-			// Remove any existing timer markup.
-			destroyAllEvidence();
+			// Remove the existing timer.
+			removeExistingTimer();
 
 			// Add our new one.
 			jQuery( 'body' ).append( response.data.markup );
+
+			// Add our new head meta tag.
+			jQuery( 'head' ).append( '<meta name="woo-cart-expiration" content="' + parseInt( wooCartExpiration.set_expired, 10 ) + '" />' );
 
 			// And load our timer.
 			loadCartTimer( cartIntervl );
@@ -139,7 +142,6 @@ function killTheCartContents() {
 		// If we cleared, make sure the fragments are flushed.
 		if ( response.data.cleared === true ) {
 			jQuery( document.body ).trigger( 'wc_fragment_refresh' );
-			jQuery( document.body ).trigger( 'updated_wc_div' );
 		}
 
 	// Finish up the Ajax call, enforcing the JSON setup.
@@ -269,8 +271,12 @@ function setTimerDisplayClass( totalSeconds ) {
 
 	} else if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[1], 10 ) ) {
 
-		// Add our pulsing class.
+		// Add our full color and pulsing classes.
+		radialBlock.addClass( 'woo-cart-timer-radial-expire-full' );
 		radialBlock.addClass( 'woo-cart-timer-radial-expire-pulse' );
+
+		// And remove the circle animation.
+		radialBlock.removeClass( 'woo-cart-radial-animate' );
 
 	} else if ( parseInt( totalSeconds, 10 ) < parseInt( classPoints[2], 10 ) ) {
 
@@ -309,24 +315,14 @@ function destroyAllEvidence() {
 	// Make sure the cart is cleared out first.
 	killTheCartContents();
 
+	// Remove the existing timer.
+	removeExistingTimer();
+
+	// Remove the modal.
+	removeExistingModal();
+
 	// Delete the cookie to be safe.
 	document.cookie = wooCartExpiration.cookie_name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-
-	// Set a variable for the (possible) cart.
-	var timerDisplay = document.getElementById( 'woo-cart-timer-wrap-id' );
-
-	// And remove the whole counter thing.
-	if ( timerDisplay ) {
-		timerDisplay.remove();
-	}
-
-	// Set a variable for the (possible) modal.
-	var modalDisplay = document.getElementById( 'woo-cart-expire-modal-wrap-id' );
-
-	// And remove the whole modal thing.
-	if ( modalDisplay ) {
-		modalDisplay.remove();
-	}
 
 	// And be done.
 }
@@ -344,6 +340,34 @@ function killAllIntervals() {
 	// Check for the visual polling.
 	if ( window.cartTimeID !== undefined && window.cartTimeID !== 'undefined' ) {
 		window.clearInterval( window.cartTimeID );
+	}
+}
+
+/**
+ * Remove any markup for a timer we may have.
+ */
+function removeExistingTimer() {
+
+	// Set a variable for the (possible) cart.
+	var timerDisplay = document.getElementById( 'woo-cart-timer-wrap-id' );
+
+	// And remove the whole counter thing.
+	if ( timerDisplay ) {
+		timerDisplay.remove();
+	}
+}
+
+/**
+ * Remove any markup for a modal we may have.
+ */
+function removeExistingModal() {
+
+	// Set a variable for the (possible) modal.
+	var modalDisplay = document.getElementById( 'woo-cart-expire-modal-wrap-id' );
+
+	// And remove the whole modal thing.
+	if ( modalDisplay ) {
+		modalDisplay.remove();
 	}
 }
 

@@ -83,6 +83,43 @@
 		}
 	}
 
+	&.woo-cart-timer-radial-expire-full {
+
+		border-color: $timer_color_soon;
+
+		.woo-cart-timer-radial-half {
+			// background: $timer_color_soon;
+			@include backcolor( 255, 50, 50, 0.1 );
+
+			&:nth-of-type(2) {
+				z-index: 500;
+			}
+
+			&:before {
+				content: "";
+				position: absolute;
+				top: $timer_thick;
+				left: $timer_thick;
+				height: $timer_size - 2 * $timer_thick;
+				width: ( $timer_size - 2 * $timer_thick ) / 2;
+				border-radius: ( $timer_size - $timer_thick ) / 2 0 0 ( $timer_size - $timer_thick ) / 2;
+				@include backcolor( 255, 50, 50, 0.3 );
+			}
+
+			&:after {
+				content: "";
+				position: absolute;
+				height: $timer_size * 2;
+				width: $timer_size * 1.5;
+				left: -$timer_size;
+				top: -$timer_size / 2;
+				// background: $timer_bg;
+				@include backcolor( 255, 50, 50, 0.3 );
+			}
+
+		}
+	}
+
 	&.woo-cart-timer-radial-expire-pulse {
 		animation: pulseTimer 2s infinite;
 	}
@@ -129,6 +166,18 @@
 	}
 }
 
+// Set the new font color.
+.woo-cart-timer-radial-expire-full {
+
+	#woo-cart-expire-countdown {
+
+		.expire-value {
+			color: #fff;
+			text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+		}
+	}
+
+}
 
 @media only screen and (max-width: 782px) {}
 
