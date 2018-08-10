@@ -110,10 +110,14 @@ function get_timer_markup() {
 		send_ajax_error_response( 'invalid-nonce' );
 	}
 
-	// Fetch the markup.
-	$markup = Markup\timer_markup_display();
+	// Fetch the individual markup items.
+	$timer  = Markup\timer_markup_display();
+	$modal  = Markup\expire_modal_display();
 
-	// Send a response with the time remaining.
+	// Set one variable to return.
+	$markup = array( 'timer' => $timer, 'modal' => $modal );
+
+	// Send a response with the markup.
 	send_ajax_success_response( array( 'markup' => $markup ) );
 }
 

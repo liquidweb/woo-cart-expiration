@@ -86,9 +86,13 @@ function load_expiration_metatag() {
 	// Load up our meta tag.
 	echo '<meta name="woo-cart-expiration" content="' . absint( $expire ) . '" />';
 
-	// And include our timer and modal markup.
+	// And include our timer markup.
 	add_action( 'wp_footer', __NAMESPACE__ . '\load_timer_display', 999 );
-	add_action( 'wp_footer', __NAMESPACE__ . '\load_modal_display', 999 );
+
+	// And include our modal markup, excluding the checkout page.
+	if ( ! is_checkout() ) {
+		add_action( 'wp_footer', __NAMESPACE__ . '\load_modal_display', 999 );
+	}
 }
 
 /**

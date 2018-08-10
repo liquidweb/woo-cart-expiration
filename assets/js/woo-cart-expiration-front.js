@@ -60,11 +60,13 @@ function displayTimerMarkup( cartIntervl ) {
 		// Load markup if we have it.
 		if ( response.data.markup !== '' ) {
 
-			// Remove the existing timer.
-			removeExistingTimer();
+			// Remove the existing timer and modal.
+			removeMarkupDisplay( 'woo-cart-timer-wrap-id' );
+			removeMarkupDisplay( 'woo-cart-expire-modal-wrap-id' );
 
-			// Add our new one.
-			jQuery( 'body' ).append( response.data.markup );
+			// Add our new timer and modal.
+			jQuery( 'body' ).append( response.data.markup.timer );
+			jQuery( 'body' ).append( response.data.markup.modal );
 
 			// Add our new head meta tag.
 			jQuery( 'head' ).append( '<meta name="woo-cart-expiration" content="' + parseInt( wooCartExpiration.set_expired, 10 ) + '" />' );
@@ -316,10 +318,10 @@ function destroyAllEvidence() {
 	killTheCartContents();
 
 	// Remove the existing timer.
-	removeExistingTimer();
+	removeMarkupDisplay( 'woo-cart-timer-wrap-id' );
 
 	// Remove the modal.
-	removeExistingModal();
+	removeMarkupDisplay( 'woo-cart-expire-modal-wrap-id' );
 
 	// Delete the cookie to be safe.
 	document.cookie = wooCartExpiration.cookie_name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
@@ -344,30 +346,16 @@ function killAllIntervals() {
 }
 
 /**
- * Remove any markup for a timer we may have.
+ * Remove a portion of the markup.
  */
-function removeExistingTimer() {
+function removeMarkupDisplay( elementID ) {
 
-	// Set a variable for the (possible) cart.
-	var timerDisplay = document.getElementById( 'woo-cart-timer-wrap-id' );
+	// Set a variable for the (possible) element.
+	var maybeExists = document.getElementById( elementID );
 
-	// And remove the whole counter thing.
-	if ( timerDisplay ) {
-		timerDisplay.remove();
-	}
-}
-
-/**
- * Remove any markup for a modal we may have.
- */
-function removeExistingModal() {
-
-	// Set a variable for the (possible) modal.
-	var modalDisplay = document.getElementById( 'woo-cart-expire-modal-wrap-id' );
-
-	// And remove the whole modal thing.
-	if ( modalDisplay ) {
-		modalDisplay.remove();
+	// If we have it, move it.
+	if ( maybeExists ) {
+		maybeExists.remove();
 	}
 }
 
@@ -435,7 +423,12 @@ jQuery( document ).ready( function($) {
 
 	// Check if we're on the checkout page.
 	if ( 'checkout' === maybeCheck ) {
+
+		// Handle our reset.
 		resetCookieAtCheckout();
+
+		// Kill the modal.
+		removeMarkupDisplay( 'woo-cart-expire-modal-wrap-id' );
 	}
 
 	// Check if we're on the order confirm page.
