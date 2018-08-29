@@ -16,6 +16,7 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
  * Start our engines.
  */
 add_action( 'woocommerce_settings_tabs_general', __NAMESPACE__ . '\add_setting_link_anchor' );
+add_action( 'woocommerce_admin_field_expiretime', __NAMESPACE__ . '\add_expiretime_setting_field' );
 add_action( 'woocommerce_get_settings_general', __NAMESPACE__ . '\add_expiration_setting_args', 10 );
 add_filter( 'plugin_action_links', __NAMESPACE__ . '\add_plugin_settings_link', 10, 2 );
 
@@ -29,9 +30,46 @@ function add_setting_link_anchor() {
 }
 
 /**
+ * A custom field for the duration because Woo is dumb.
+ *
+ * @param array $field  The array of values for the field.
+ */
+function add_expiretime_setting_field( $field ) {
+
+	// Set my stored value for the field.
+	$setting_value  = get_option( 'woo_cart_expiration_opt_mins', $field['default'] );
+
+	// Set my tooltip.
+	$tooltip_markup = wc_help_tip( $field['desc'] );
+	?>
+	<tr valign="top">
+
+		<th scope="row" class="titledesc">
+			<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?> <?php echo $tooltip_markup; // WPCS: XSS ok. ?></label>
+		</th>
+
+		<td class="forminp forminp-expiretime">
+			<input
+				name="<?php echo esc_attr( $field['id'] ); ?>"
+				id="<?php echo esc_attr( $field['id'] ); ?>"
+				value="<?php echo absint( $setting_value ); ?>"
+				class="<?php echo esc_attr( $field['class'] ); ?>"
+				type="number"
+				min="<?php echo absint( $field['range']['min'] ); ?>"
+				max="<?php echo absint( $field['range']['max'] ); ?>"
+				step="1"
+				style="width:50px;"
+			/>
+			<p class="description"><?php echo $field['suffix']; ?></p>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
  * Add our new settings to the existing general tab in WooCommerce.
  *
- * @param  array  $settings         The current array of settings.
+ * @param  array  $settings  The current array of settings.
  *
  * @return HTML
  */
@@ -60,18 +98,14 @@ function add_expiration_setting_args( $settings ) {
 
 		// Enter the cart expiration time.
 		array(
-			'title'             => __( 'Expiration Time', 'woo-cart-expiration' ),
-			'desc'              => __( 'This sets the amount of time (in minutes) a customer has to check out.', 'woo-cart-expiration' ),
-			'id'                => Core\OPTIONS_PREFIX . 'mins',
-			'css'               => 'width:50px;',
-			'default'           => '15',
-			'desc_tip'          => true,
-			'type'              => 'number',
-			'custom_attributes' => array(
-				'min'  => 1,
-				'max'  => 30,
-				'step' => 1,
-			),
+			'title'    => __( 'Expiration Time', 'woo-cart-expiration' ),
+			'desc'     => __( 'Make sure to set a reasonable amount of time to allow your visitors to continue shopping.', 'woo-cart-expiration' ),
+			'id'       => Core\OPTIONS_PREFIX . 'mins',
+			'default'  => '15',
+			'type'     => 'expiretime',
+			'class'    => 'cart-expire-duration-field',
+			'suffix'   => __( 'This sets the amount of time (in minutes) a customer has to check out.', 'woo-cart-expiration' ),
+			'range'    => array( 'min' => 1, 'max' => 30 ),
 		),
 
 		// Close the section.
