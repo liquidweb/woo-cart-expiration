@@ -15,10 +15,49 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 /**
  * Start our engines.
  */
+add_action( 'admin_head', __NAMESPACE__ . '\add_setting_field_css', 999 );
 add_action( 'woocommerce_settings_tabs_general', __NAMESPACE__ . '\add_setting_link_anchor' );
 add_action( 'woocommerce_admin_field_expiretime', __NAMESPACE__ . '\add_expiretime_setting_field' );
 add_action( 'woocommerce_get_settings_general', __NAMESPACE__ . '\add_expiration_setting_args', 10 );
 add_filter( 'plugin_action_links', __NAMESPACE__ . '\add_plugin_settings_link', 10, 2 );
+
+/**
+ * Add a small bit of CSS.
+ */
+function add_setting_field_css() {
+
+	// Check if we are on the settings page.
+	$maybe_settings = Utilities\maybe_admin_settings_page();
+
+	// Bail if we aren't on the settings page.
+	if ( ! $maybe_settings ) {
+		return;
+	}
+
+	// Set my empty.
+	$style  = '';
+
+	// Open my style tag.
+	$style .= '<style type="text/css">';
+
+		// Set the field CSS.
+		$style .= 'td.forminp-expiretime input#' . Core\OPTIONS_PREFIX . 'mins {';
+			$style .= 'width: 50px;';
+		$style .= '}' . "\n";
+
+		// Set the inline description CSS.
+		$style .= 'td.forminp-expiretime span.cart-expire-duration-description {';
+			$style .= 'display: inline-block;';
+			$style .= 'vertical-align: middle;';
+			$style .= 'padding: 6px;';
+		$style .= '}' . "\n";
+
+	// Close my style tag.
+	$style .= '</style>';
+
+	// And echo it out.
+	echo $style; // WPCS: XSS ok.
+}
 
 /**
  * Set a small div so we can anchor to it.
@@ -37,33 +76,53 @@ function add_setting_link_anchor() {
 function add_expiretime_setting_field( $field ) {
 
 	// Set my stored value for the field.
-	$setting_value  = get_option( 'woo_cart_expiration_opt_mins', $field['default'] );
+	$setting_value  = get_option( Core\OPTIONS_PREFIX . 'mins', $field['default'] );
 
-	// Set my tooltip.
-	$tooltip_markup = wc_help_tip( $field['desc'] );
-	?>
-	<tr valign="top">
+	// Set my minimum and maximum ranges with a filter.
+	$range_minimum  = apply_filters( Core\HOOK_PREFIX . 'range_min', $field['range']['min'], $field );
+	$range_maximum  = apply_filters( Core\HOOK_PREFIX . 'range_max', $field['range']['max'], $field );
 
-		<th scope="row" class="titledesc">
-			<label for="<?php echo esc_attr( $field['id'] ); ?>"><?php echo esc_html( $field['title'] ); ?> <?php echo $tooltip_markup; // WPCS: XSS ok. ?></label>
-		</th>
+	// Begin building out the field.
+	$build  = '';
 
-		<td class="forminp forminp-expiretime">
-			<input
-				name="<?php echo esc_attr( $field['id'] ); ?>"
-				id="<?php echo esc_attr( $field['id'] ); ?>"
-				value="<?php echo absint( $setting_value ); ?>"
-				class="<?php echo esc_attr( $field['class'] ); ?>"
-				type="number"
-				min="<?php echo absint( $field['range']['min'] ); ?>"
-				max="<?php echo absint( $field['range']['max'] ); ?>"
-				step="1"
-				style="width:50px;"
-			/>
-			<p class="description"><?php echo $field['suffix']; ?></p>
-		</td>
-	</tr>
-	<?php
+	// Open the table row.
+	$build .= '<tr valign="top">';
+
+		// Set up the title column portion.
+		$build .= '<th scope="row" class="titledesc">';
+
+			// Open the label markup.
+			$build .= '<label for="' . esc_attr( $field['id'] ) . '">';
+
+				// Output the actual text.
+				$build .= esc_html( $field['title'] );
+
+				// Output the tooltip.
+				$build .= wc_help_tip( $field['desc'] );
+
+			// Close the label markup.
+			$build .= '</label>';
+
+		// Close the title column portion.
+		$build .= '</th>';
+
+		// Set up the field column portion.
+		$build .= '<td class="forminp forminp-expiretime">';
+
+			// Output the input field.
+			$build .= '<input name="' . esc_attr( $field['id'] ) . '" id="' . esc_attr( $field['id'] ) . '" value="' . absint( $setting_value ) . '" class="' . esc_attr( $field['class'] ) . '-field" type="number" min="' . absint( $range_minimum ) . '" max="' . absint( $range_maximum ) . '" step="1" />';
+
+			// Output the secondary description.
+			$build .= '<span class="description ' . esc_attr( $field['class'] ) . '-description">' . wp_kses_post( $field['suffix'] ) . '</span>';
+
+		// Close the field column portion.
+		$build .= '</td>';
+
+	// Close the row.
+	$build .= '</tr>';
+
+	// And echo it out.
+	echo $build; // WPCS: XSS ok.
 }
 
 /**
@@ -103,7 +162,7 @@ function add_expiration_setting_args( $settings ) {
 			'id'       => Core\OPTIONS_PREFIX . 'mins',
 			'default'  => '15',
 			'type'     => 'expiretime',
-			'class'    => 'cart-expire-duration-field',
+			'class'    => 'cart-expire-duration',
 			'suffix'   => __( 'This sets the amount of time (in minutes) a customer has to check out.', 'woo-cart-expiration' ),
 			'range'    => array( 'min' => 1, 'max' => 30 ),
 		),

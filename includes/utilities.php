@@ -176,17 +176,60 @@ function maybe_checkout_page() {
 }
 
 /**
+ * Confirm we are on the settings page in the admin.
+ *
+ * @param  string $compare  What we are comparing the screen object to.
+ *
+ * @return mixed
+ */
+function maybe_admin_settings_page( $compare = 'woocommerce_page_wc-settings' ) {
+
+	// Bail if not on admin or our function doesnt exist.
+	if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
+		return false;
+	}
+
+	// Get my current screen.
+	$screen = get_current_screen();
+
+	// Bail without.
+	if ( empty( $screen ) || ! is_object( $screen ) ) {
+		return false;
+	}
+
+	// If the compare string is false, return the entire object.
+	if ( empty( $compare ) ) {
+		return $screen;
+	}
+
+	// If we have no base or ID, or mismatched, it's false right off the bat.
+	if ( empty( $screen->base ) || empty( $screen->id ) || sanitize_text_field( $screen->id ) !== sanitize_text_field( $screen->base ) ) {
+		return false;
+	}
+
+	// Check against just the base, since they both should match here.
+	if ( sanitize_text_field( $compare ) !== sanitize_text_field( $screen->base ) ) {
+		return false;
+	}
+
+	// No other checks? Go forth.
+	return true;
+}
+
+/**
  * Return our base link, with function fallbacks.
+ *
+ * @param  boolean $include_hash  Whether to include the anchor hash.
  *
  * @return string
  */
-function get_settings_tab_link() {
+function get_settings_tab_link( $include_hash = true ) {
 
 	// First set the main link.
 	$settings   = ! function_exists( 'menu_page_url' ) ? admin_url( 'admin.php?page=wc-settings&tab=general' ) : add_query_arg( array( 'tab' => 'general' ), menu_page_url( 'wc-settings', false ) );
 
 	// Now return the link with the hash.
-	return $settings . '#' . sanitize_html_class( Core\SETTINGS_ANCHOR );
+	return ! $include_hash ? $settings : $settings . '#' . sanitize_html_class( Core\SETTINGS_ANCHOR );
 }
 
 /**
