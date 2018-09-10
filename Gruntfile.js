@@ -7,6 +7,32 @@ module.exports = function( grunt ) {
 
     pkg: grunt.file.readJSON( 'package.json' ),
 
+    // Make our distribution copy.
+    copy: {
+      main: {
+        src: [
+          'assets/**',
+          'includes/**',
+          'languages/**',
+          'index.php',
+          'woo-cart-expiration.php',
+          'readme.txt',
+          'CHANGELOG.md',
+          'LICENSE',
+
+          /*
+           * Exclude files not necessary in the distribution.
+           *
+           * @link https://github.com/liquidweb/airstory-wp/issues/69
+           */
+          '!assets/scss/**',
+          '!assets/scss',
+          '!assets/css/**.map',
+        ],
+        dest: 'dist/'
+      },
+  },
+
     // Process the textdomain.
     addtextdomain: {
       options: {
