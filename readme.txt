@@ -1,5 +1,5 @@
 === WooCommerce Cart Expiration ===
-Contributors: liquidweb
+Contributors: liquidweb, norcross
 Tags: woocommerce, shopping cart, cart expiration
 Requires at least: 4.8
 Tested up to: 4.9.8

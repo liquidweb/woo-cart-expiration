@@ -1,5 +1,5 @@
 # WooCommerce Cart Expiration #
-**Contributors:** [liquidweb](https://profiles.wordpress.org/liquidweb)  
+**Contributors:** [liquidweb](https://profiles.wordpress.org/liquidweb), [norcross](https://profiles.wordpress.org/norcross)    
 **Tags:** woocommerce, shopping cart, cart expiration  
 **Requires at least:** 4.8  
 **Tested up to:** 4.9.8  
