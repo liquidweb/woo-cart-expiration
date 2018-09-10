@@ -37,14 +37,13 @@ module.exports = function( grunt ) {
     compress: {
       main: {
         options: {
-          archive: 'build/<%= pkg.name %>-<%= pkg.version %>.zip'
+          archive: 'release/<%= pkg.name %>-<%= pkg.version %>.zip'
         },
         files: [
           {
             expand: true,
             cwd: 'dist/',
             src: ['**'],
-            //flatten: true,
             dest: '<%= pkg.name %>/'
           }
         ]

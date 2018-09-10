@@ -5,7 +5,7 @@ Thumbs.db
 wp-cli.local.yml
 _notes.txt
 dist
-build
+release
 node_modules/
 .sass-cache
 *.sql
