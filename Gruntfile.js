@@ -31,6 +31,13 @@ module.exports = function( grunt ) {
         ],
         dest: 'dist/'
       },
+      screenshots: {
+        expand: true,
+        flatten: true,
+        cwd: 'repo-assets/screenshots/',
+        src: ['**'],
+        dest: 'dist/'
+      },
     },
 
     // Package up the plugin
@@ -193,7 +200,7 @@ module.exports = function( grunt ) {
   grunt.registerTask( 'readme', ['wp_readme_to_markdown'] );
 
   // Package a release
-  grunt.registerTask('release', ['wp_readme_to_markdown', 'sass:dist', 'cssmin', 'uglify:all', 'copy', 'compress']);
+  grunt.registerTask('release', ['wp_readme_to_markdown', 'sass:dist', 'cssmin', 'uglify:all', 'copy:main', 'copy:screenshots', 'compress']);
 
   // Compile SASS and minify assets
   grunt.registerTask( 'pre-commit', ['sass:dist', 'cssmin', 'uglify:all'] );
