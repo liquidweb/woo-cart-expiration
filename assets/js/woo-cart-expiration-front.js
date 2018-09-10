@@ -143,7 +143,13 @@ function killTheCartContents() {
 
 		// If we cleared, make sure the fragments are flushed.
 		if ( response.data.cleared === true ) {
-			jQuery( document.body ).trigger( 'wc_fragment_refresh' );
+
+			// If we're on the checkout page, we need to redirect to cart.
+			if ( 'checkout' === wooCartExpiration.maybe_check ) {
+				window.location.href = wooCartExpiration.cart_url;
+			} else {
+				jQuery( document.body ).trigger( 'wc_fragment_refresh' );
+			}
 		}
 
 	// Finish up the Ajax call, enforcing the JSON setup.

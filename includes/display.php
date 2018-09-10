@@ -46,6 +46,7 @@ function load_expiration_assets() {
 	// Set my localized variables.
 	$local  = array(
 		'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+		'cart_url'     => Utilities\get_cart_url(),
 		'maybe_check'  => Utilities\maybe_checkout_page(),
 		'timer_nonce'  => wp_create_nonce( 'woo_cart_timer_action' ),
 		'markup_nonce' => wp_create_nonce( 'woo_markup_timer_action' ),

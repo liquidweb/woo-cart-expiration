@@ -27,6 +27,23 @@ function maybe_expiration_enabled() {
 }
 
 /**
+ * Get the URL of the cart, for redirects.
+ *
+ * @return string
+ */
+function get_cart_url() {
+
+	// Get my ID, which is stored.
+	$cart_page_id   = get_option( 'woocommerce_cart_page_id', 0 );
+
+	// If no cart ID exists, grab the home page.
+	$cart_page_url  = ! $cart_page_id ? home_url() : get_permalink( $cart_page_id );
+
+	// Return the URL.
+	return trailingslashit( $cart_page_url );
+}
+
+/**
  * Calculate the expiration time for a new cookie.
  *
  * @param  string $key  Request a single key from the array.
@@ -230,6 +247,25 @@ function get_settings_tab_link( $include_hash = true ) {
 
 	// Now return the link with the hash.
 	return ! $include_hash ? $settings : $settings . '#' . sanitize_html_class( Core\SETTINGS_ANCHOR );
+}
+
+/**
+ * Handles a front-end redirect request.
+ *
+ * @param  string $redirect  The redirect URL to send.
+ *
+ * @return void
+ */
+function single_page_redirect( $redirect = '' ) {
+
+	// Bail on admin.
+	if ( empty( $redirect ) ) {
+		return false;
+	}
+
+	// Do the redirect.
+	wp_redirect( esc_url( $redirect ) );
+	exit;
 }
 
 /**
