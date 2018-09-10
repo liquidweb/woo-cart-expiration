@@ -31,7 +31,25 @@ module.exports = function( grunt ) {
         ],
         dest: 'dist/'
       },
-  },
+    },
+
+    // Package up the plugin
+    compress: {
+      main: {
+        options: {
+          archive: 'build/<%= pkg.name %>-<%= pkg.version %>.zip'
+        },
+        files: [
+          {
+            expand: true,
+            cwd: 'dist/',
+            src: ['**'],
+            //flatten: true,
+            dest: '<%= pkg.name %>/'
+          }
+        ]
+      }
+    },
 
     // Process the textdomain.
     addtextdomain: {
@@ -174,6 +192,9 @@ module.exports = function( grunt ) {
   grunt.registerTask( 'default', ['i18n', 'readme', 'check-modules'] );
   grunt.registerTask( 'i18n', ['addtextdomain', 'makepot'] );
   grunt.registerTask( 'readme', ['wp_readme_to_markdown'] );
+
+  // Package a release
+  grunt.registerTask('release', ['wp_readme_to_markdown', 'sass:dist', 'cssmin', 'uglify:all', 'copy', 'compress']);
 
   // Compile SASS and minify assets
   grunt.registerTask( 'pre-commit', ['sass:dist', 'cssmin', 'uglify:all'] );
