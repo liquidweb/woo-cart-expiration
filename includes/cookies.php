@@ -23,7 +23,7 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
 function build_cookie_args( $timer_expire = 0, $cart_key = '' ) {
 
 	// Smash together the two pieces with a delimiter.
-	$setup  = absint( $timer_expire ) . '|' . $cart_key;
+	$setup  = absint( $timer_expire ) . '|' . sanitize_key( $cart_key );
 
 	// Return the base64 string.
 	return base64_encode( $setup );
