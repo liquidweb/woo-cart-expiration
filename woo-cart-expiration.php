@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Cart Expiration
  * Plugin URI:  https://github.com/liquidweb/woo-cart-expiration
  * Description: Set a time limit on a customer checking out.
- * Version:     0.1.0
+ * Version:     0.2.0
  * Author:      Liquid Web
  * Author URI:  https://www.liquidweb.com
  * Text Domain: woo-cart-expiration
@@ -22,7 +22,7 @@ namespace LiquidWeb\WooCartExpiration;
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Define our plugin version.
-define( __NAMESPACE__ . '\VERS', '0.1.0' );
+define( __NAMESPACE__ . '\VERS', '0.2.0' );
 
 // Plugin root file.
 define( __NAMESPACE__ . '\FILE', __FILE__ );

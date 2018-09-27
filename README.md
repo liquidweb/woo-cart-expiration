@@ -3,7 +3,7 @@
 **Tags:** woocommerce, shopping cart, cart expiration  
 **Requires at least:** 4.8  
 **Tested up to:** 4.9.8  
-**Stable tag:** 0.1.0  
+**Stable tag:** 0.2.0  
 **License:** MIT  
 **License URI:** https://opensource.org/licenses/MIT  
 
@@ -41,7 +41,10 @@ Because sometimes people need some encouragement.
 
 ## Changelog ##
 
-### 0.1.0 ###
+### 0.2.0  09/27/2018 ###
+* Updating storage and retrieval methods for cookies.
+
+### 0.1.0  09/25/2018 ###
 * Initial release
 
 

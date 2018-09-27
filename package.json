@@ -1,6 +1,6 @@
 {
   "name": "woo-cart-expiration",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Set a time limit on a customer checking out.",
   "repository": {
     "type": "git",
