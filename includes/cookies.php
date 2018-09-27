@@ -22,11 +22,11 @@ use LiquidWeb\WooCartExpiration\Utilities as Utilities;
  */
 function build_cookie_args( $timer_expire = 0, $cart_key = '' ) {
 
-	// Now create a JSON encoded array so we can check stuff later.
-	$setup  = array( 'expire' => absint( $timer_expire ), 'cart' => $cart_key );
+	// Smash together the two pieces with a delimiter.
+	$setup  = absint( $timer_expire ) . '|' . $cart_key;
 
 	// Return the base64 string.
-	return base64_encode( maybe_serialize( $setup ) );
+	return base64_encode( $setup );
 }
 
 /**
@@ -104,22 +104,30 @@ function check_cookie( $data = false ) {
 		return;
 	}
 
-	// Decode and unserialize the cookie.
-	$cookie = maybe_unserialize( base64_decode( $_COOKIE[ Core\COOKIE_NAME ] ) );
+	// First decode our cookie value.
+	$decode = base64_decode( $_COOKIE[ Core\COOKIE_NAME ] );
 
-	// Bail without a set of data or an expire time.
-	if ( ! $cookie || empty( $cookie['expire'] ) ) {
+	// Bail if we have no resulting value or it isn't serialized.
+	if ( empty( $decode ) ) {
+		return;
+	}
+
+	// Convert back to an array.
+	$pieces = explode( '|', $decode );
+
+	// Make sure it worked and that each one exists before moving.
+	if ( empty( $pieces ) || ! is_array( $pieces ) || empty( $pieces[0] ) || empty( $pieces[1] ) ) {
 		return false;
 	}
 
 	// If we requested the data, send it.
 	if ( $data ) {
-		return $cookie;
+		return array( 'expire' => absint( $pieces[0] ), 'cart' => sanitize_key( $pieces[1] ) );
 	}
 
 	// Set my current time.
 	$current_time   = current_time( 'timestamp', true );
 
 	// Return true / false for expired.
-	return absint( $cookie['expire'] ) >= absint( $current_time ) ? true : false;
+	return absint( $pieces[0] ) >= absint( $current_time ) ? true : false;
 }
